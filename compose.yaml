@@ -1,0 +1,13 @@
+services:
+  velora-demo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bses-velora-demo
+    restart: unless-stopped
+    ports:
+      - "3101:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+

@@ -1,0 +1,19 @@
+import React from "react";
+import { Locale } from "@/types";
+import { FaqView } from "@/components/brand/FaqView";
+
+export function generateStaticParams() {
+  return [{ locale: "fr" }, { locale: "en" }, { locale: "ar" }];
+}
+
+interface FaqPageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export default async function FaqPage({ params }: FaqPageProps) {
+  const resolved = await params;
+  const locale: Locale = resolved.locale === "ar" ? "ar" : resolved.locale === "en" ? "en" : "fr";
+
+  return <FaqView locale={locale} />;
+}
+

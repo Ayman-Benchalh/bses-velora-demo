@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,800;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  --font-arabic: 'Cairo', 'Amiri', -apple-system, sans-serif;
+}
+
+/* Subtle paper texture background */
+body {
+  color: #171717;
+  background-color: #FAF7F2;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Arabic layout font adaptation */
+[dir="rtl"] {
+  font-family: var(--font-arabic);
+}
+
+[dir="rtl"] h1,
+[dir="rtl"] h2,
+[dir="rtl"] h3,
+[dir="rtl"] h4,
+[dir="rtl"] h5,
+[dir="rtl"] h6 {
+  font-family: var(--font-arabic);
+  letter-spacing: normal !important;
+}
+
+/* Smooth luxury scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F3EEE6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #B78D6C;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #996F4E;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #B78D6C;
+  outline-offset: 2px;
+}
+
