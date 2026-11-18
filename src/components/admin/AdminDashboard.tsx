@@ -205,6 +205,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                 setEditingProduct(null);
                 setIsProductModalOpen(true);
               }}
+              data-testid="admin-add-product-btn"
               className="inline-flex items-center gap-1.5 py-2 px-3.5 bg-ink text-white text-xs uppercase tracking-wider font-semibold hover:bg-camel transition-colors shadow-sm"
             >
               <Plus className="w-3.5 h-3.5 text-camel" />
@@ -533,6 +534,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                         <td className="p-3 text-right rtl:text-left">
                           <div className="flex items-center justify-end rtl:justify-start gap-2">
                             <button
+                              data-testid="edit-product-btn"
                               onClick={() => {
                                 setEditingProduct(p);
                                 setIsProductModalOpen(true);
@@ -543,6 +545,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
+                              data-testid="delete-product-btn"
                               onClick={() => setProductToDelete(p)}
                               className="p-1.5 text-muted hover:text-red-700 transition-colors"
                               title="Supprimer"
@@ -610,6 +613,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                         </button>
                         <span className="px-2 font-bold text-camel-dark">{v.stock}</span>
                         <button
+                          data-testid="quick-stock-increment-btn"
                           onClick={() => updateVariantStock(p.id, v.id, v.stock + 1)}
                           className="px-1.5 py-0.5 bg-ivory hover:bg-ivory-dark text-ink font-bold"
                           title="Augmenter"
@@ -796,6 +800,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                 <label className="text-xs font-semibold text-ink block">Code Privilège</label>
                 <input
                   type="text"
+                  data-testid="promo-code-input"
                   value={newPromoCode}
                   onChange={(e) => setNewPromoCode(e.target.value)}
                   placeholder="ex: PRINTEMPS20"
@@ -808,6 +813,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                 <label className="text-xs font-semibold text-ink block">Remise (%)</label>
                 <input
                   type="number"
+                  data-testid="promo-discount-input"
                   min="5"
                   max="50"
                   value={newPromoPercent}
@@ -819,6 +825,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
 
               <button
                 type="submit"
+                data-testid="submit-promo-btn"
                 className="py-2 px-5 bg-ink text-white text-xs uppercase tracking-wider font-semibold hover:bg-camel transition-colors w-full sm:w-auto"
               >
                 Créer le code
@@ -938,6 +945,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                 {t(locale, "common.cancel")}
               </button>
               <button
+                data-testid="confirm-delete-product-btn"
                 onClick={handleConfirmDelete}
                 className="py-2 px-4 bg-red-700 text-white text-xs uppercase tracking-wider font-semibold hover:bg-red-800"
               >

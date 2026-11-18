@@ -6,6 +6,7 @@ import { Locale } from "@/types";
 import { useStore } from "@/context/StoreContext";
 import { useToast } from "@/context/ToastContext";
 import { t } from "@/lib/translations";
+import { BSES_CONTACT_EMAIL, getBsesWhatsAppUrl } from "@/lib/constants";
 import {
   Sparkles,
   LayoutDashboard,
@@ -34,9 +35,7 @@ export function FloatingBsesDemo({ locale }: FloatingBsesDemoProps) {
     setIsOpen(false);
   };
 
-  const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(
-    t(locale, "bses.whatsappMessage")
-  )}`;
+  const whatsappUrl = getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"));
 
   return (
     <>
@@ -161,43 +160,57 @@ export function FloatingBsesDemo({ locale }: FloatingBsesDemoProps) {
                   <Mail className="w-4 h-4 text-camel flex-shrink-0" />
                   <span className="font-semibold text-ink">{t(locale, "bses.emailLabel")}</span>
                   <a
-                    href="mailto:Bses47113@gmail.com"
+                    href={`mailto:${BSES_CONTACT_EMAIL}`}
                     className="text-camel-dark underline hover:text-ink font-mono"
                   >
-                    Bses47113@gmail.com
+                    {BSES_CONTACT_EMAIL}
                   </a>
                 </div>
-                <div className="flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-camel flex-shrink-0" />
-                  <span className="font-semibold text-ink">{t(locale, "bses.whatsappLabel")}</span>
-                  <a
-                    href={whatsappUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-camel-dark underline hover:text-ink font-mono flex items-center gap-1"
-                  >
-                    WhatsApp Démo <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
+                {whatsappUrl && (
+                  <div className="flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4 text-camel flex-shrink-0" />
+                    <span className="font-semibold text-ink">{t(locale, "bses.whatsappLabel")}</span>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-camel-dark underline hover:text-ink font-mono flex items-center gap-1"
+                    >
+                      WhatsApp Démo <ExternalLink className="w-3 h-3" />
+                    </a>
+                  </div>
+                )}
               </div>
 
               <div className="pt-2 flex flex-col sm:flex-row gap-2.5">
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-ink text-white text-xs tracking-wider uppercase font-medium hover:bg-camel transition-colors"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Échanger sur WhatsApp</span>
-                </a>
-                <a
-                  href="mailto:Bses47113@gmail.com?subject=Demande%20de%20d%C3%A9monstration%20e-commerce%20VELORA%20-%20BSES"
-                  className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-ink text-ink text-xs tracking-wider uppercase font-medium hover:bg-ivory transition-colors"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Envoyer un Email</span>
-                </a>
+                {whatsappUrl ? (
+                  <>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 bg-ink text-white text-xs tracking-wider uppercase font-medium hover:bg-camel transition-colors"
+                    >
+                      <MessageCircle className="w-4 h-4" />
+                      <span>Échanger sur WhatsApp</span>
+                    </a>
+                    <a
+                      href={`mailto:${BSES_CONTACT_EMAIL}?subject=Demande%20de%20d%C3%A9monstration%20e-commerce%20VELORA%20-%20BSES`}
+                      className="flex-1 flex items-center justify-center gap-2 py-3 px-4 border border-ink text-ink text-xs tracking-wider uppercase font-medium hover:bg-ivory transition-colors"
+                    >
+                      <Mail className="w-4 h-4" />
+                      <span>Envoyer un Email</span>
+                    </a>
+                  </>
+                ) : (
+                  <a
+                    href={`mailto:${BSES_CONTACT_EMAIL}?subject=Demande%20de%20d%C3%A9monstration%20e-commerce%20VELORA%20-%20BSES`}
+                    className="w-full flex items-center justify-center gap-2 py-3.5 px-4 bg-ink text-white text-xs tracking-wider uppercase font-medium hover:bg-camel transition-colors"
+                  >
+                    <Mail className="w-4 h-4" />
+                    <span>Contacter BSES par Email ({BSES_CONTACT_EMAIL})</span>
+                  </a>
+                )}
               </div>
             </div>
           </div>

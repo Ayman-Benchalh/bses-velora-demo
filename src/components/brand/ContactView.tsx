@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Locale } from "@/types";
 import { t } from "@/lib/translations";
 import { useToast } from "@/context/ToastContext";
+import { BSES_CONTACT_EMAIL, getBsesWhatsAppUrl } from "@/lib/constants";
 import { Mail, MapPin, Send, MessageCircle } from "lucide-react";
 
 interface ContactViewProps {
@@ -30,9 +31,7 @@ export function ContactView({ locale }: ContactViewProps) {
     setFormData({ name: "", email: "", phone: "", subject: "Sur-mesure & Salons Privés", message: "" });
   };
 
-  const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(
-    t(locale, "bses.whatsappMessage")
-  )}`;
+  const whatsappUrl = getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"));
 
   return (
     <div className="font-sans py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -77,21 +76,23 @@ export function ContactView({ locale }: ContactViewProps) {
                 <Mail className="w-4 h-4 text-camel flex-shrink-0 mt-0.5" />
                 <div>
                   <strong className="text-ink block">Email Agence & Partenariats</strong>
-                  <a href="mailto:Bses47113@gmail.com" className="hover:text-camel underline font-mono">
-                    Bses47113@gmail.com
+                  <a href={`mailto:${BSES_CONTACT_EMAIL}`} className="hover:text-camel underline font-mono">
+                    {BSES_CONTACT_EMAIL}
                   </a>
                 </div>
               </div>
 
-              <div className="flex gap-3">
-                <MessageCircle className="w-4 h-4 text-camel flex-shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-ink block">WhatsApp Démonstration</strong>
-                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-camel underline font-mono">
-                    Ligne directe consultation
-                  </a>
+              {whatsappUrl && (
+                <div className="flex gap-3">
+                  <MessageCircle className="w-4 h-4 text-camel flex-shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="text-ink block">WhatsApp Démonstration</strong>
+                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-camel underline font-mono">
+                      Ligne directe consultation
+                    </a>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 

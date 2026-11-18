@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { Product, Order, Customer, PromoCampaign, OrderStatus } from "@/types";
 import { INITIAL_PRODUCTS } from "@/data/products";
 import { INITIAL_ORDERS, INITIAL_CUSTOMERS, INITIAL_PROMO_CAMPAIGNS } from "@/data/seed-orders";
+import { STORAGE_KEYS } from "@/lib/constants";
+import { safeGetStorage, safeSetStorage } from "@/lib/storage";
 
 interface StoreContextType {
   products: Product[];
@@ -23,13 +25,6 @@ interface StoreContextType {
   resetDemoData: () => void;
 }
 
-const STORAGE_KEYS = {
-  PRODUCTS: "velora_demo_products",
-  ORDERS: "velora_demo_orders",
-  CUSTOMERS: "velora_demo_customers",
-  CAMPAIGNS: "velora_demo_campaigns",
-};
-
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 export function StoreProvider({ children }: { children: React.ReactNode }) {
@@ -39,41 +34,25 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   const [campaigns, setCampaigns] = useState<PromoCampaign[]>(INITIAL_PROMO_CAMPAIGNS);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize from localStorage on mount
+  // Initialize from localStorage on mount with corruption recovery
   useEffect(() => {
-    try {
-      const storedProducts = localStorage.getItem(STORAGE_KEYS.PRODUCTS);
-      if (storedProducts) {
-        setProducts(JSON.parse(storedProducts));
-      } else {
-        localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
-      }
+    const loadedProducts = safeGetStorage<Product[]>(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
+    const loadedOrders = safeGetStorage<Order[]>(STORAGE_KEYS.ORDERS, INITIAL_ORDERS);
+    const loadedCustomers = safeGetStorage<Customer[]>(STORAGE_KEYS.CUSTOMERS, INITIAL_CUSTOMERS);
+    const loadedCampaigns = safeGetStorage<PromoCampaign[]>(STORAGE_KEYS.CAMPAIGNS, INITIAL_PROMO_CAMPAIGNS);
 
-      const storedOrders = localStorage.getItem(STORAGE_KEYS.ORDERS);
-      if (storedOrders) {
-        setOrders(JSON.parse(storedOrders));
-      } else {
-        localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(INITIAL_ORDERS));
-      }
+    setProducts(loadedProducts);
+    setOrders(loadedOrders);
+    setCustomers(loadedCustomers);
+    setCampaigns(loadedCampaigns);
 
-      const storedCustomers = localStorage.getItem(STORAGE_KEYS.CUSTOMERS);
-      if (storedCustomers) {
-        setCustomers(JSON.parse(storedCustomers));
-      } else {
-        localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(INITIAL_CUSTOMERS));
-      }
+    // Ensure storage is seeded if empty
+    safeSetStorage(STORAGE_KEYS.PRODUCTS, loadedProducts);
+    safeSetStorage(STORAGE_KEYS.ORDERS, loadedOrders);
+    safeSetStorage(STORAGE_KEYS.CUSTOMERS, loadedCustomers);
+    safeSetStorage(STORAGE_KEYS.CAMPAIGNS, loadedCampaigns);
 
-      const storedCampaigns = localStorage.getItem(STORAGE_KEYS.CAMPAIGNS);
-      if (storedCampaigns) {
-        setCampaigns(JSON.parse(storedCampaigns));
-      } else {
-        localStorage.setItem(STORAGE_KEYS.CAMPAIGNS, JSON.stringify(INITIAL_PROMO_CAMPAIGNS));
-      }
-    } catch (e) {
-      console.warn("localStorage not available, running in-memory demo:", e);
-    } finally {
-      setIsLoaded(true);
-    }
+    setIsLoaded(true);
   }, []);
 
   // Listen for storage events across tabs or windows
@@ -99,29 +78,17 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
 
   const saveProducts = (updated: Product[]) => {
     setProducts(updated);
-    try {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.PRODUCTS, updated);
   };
 
   const saveOrders = (updated: Order[]) => {
     setOrders(updated);
-    try {
-      localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.ORDERS, updated);
   };
 
   const saveCampaigns = (updated: PromoCampaign[]) => {
     setCampaigns(updated);
-    try {
-      localStorage.setItem(STORAGE_KEYS.CAMPAIGNS, JSON.stringify(updated));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.CAMPAIGNS, updated);
   };
 
   const addProduct = (product: Product) => {
@@ -186,11 +153,7 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
     }
 
     setCustomers(updatedCustomers);
-    try {
-      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(updatedCustomers));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.CUSTOMERS, updatedCustomers);
   };
 
   const updateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
@@ -235,14 +198,10 @@ export function StoreProvider({ children }: { children: React.ReactNode }) {
   };
 
   const resetDemoData = () => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(INITIAL_PRODUCTS));
-      localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(INITIAL_ORDERS));
-      localStorage.setItem(STORAGE_KEYS.CUSTOMERS, JSON.stringify(INITIAL_CUSTOMERS));
-      localStorage.setItem(STORAGE_KEYS.CAMPAIGNS, JSON.stringify(INITIAL_PROMO_CAMPAIGNS));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.PRODUCTS, INITIAL_PRODUCTS);
+    safeSetStorage(STORAGE_KEYS.ORDERS, INITIAL_ORDERS);
+    safeSetStorage(STORAGE_KEYS.CUSTOMERS, INITIAL_CUSTOMERS);
+    safeSetStorage(STORAGE_KEYS.CAMPAIGNS, INITIAL_PROMO_CAMPAIGNS);
 
     setProducts(INITIAL_PRODUCTS);
     setOrders(INITIAL_ORDERS);
@@ -282,4 +241,3 @@ export function useStore() {
   }
   return context;
 }
-

@@ -1,6 +1,8 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { STORAGE_KEYS } from "@/lib/constants";
+import { safeGetStorage, safeSetStorage } from "@/lib/storage";
 
 interface WishlistContextType {
   items: string[];
@@ -10,31 +12,19 @@ interface WishlistContextType {
   count: number;
 }
 
-const WISHLIST_STORAGE_KEY = "velora_demo_wishlist";
-
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export function WishlistProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<string[]>([]);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
-      if (stored) {
-        setItems(JSON.parse(stored));
-      }
-    } catch (e) {
-      console.warn("Could not load wishlist from storage", e);
-    }
+    const loaded = safeGetStorage<string[]>(STORAGE_KEYS.WISHLIST, []);
+    setItems(loaded);
   }, []);
 
   const saveWishlist = (newItems: string[]) => {
     setItems(newItems);
-    try {
-      localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(newItems));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.WISHLIST, newItems);
   };
 
   const toggleWishlist = (productId: string): boolean => {

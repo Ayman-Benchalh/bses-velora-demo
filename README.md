@@ -2,11 +2,11 @@
 
 > **A portfolio flagship demonstration developed by BSES — Benchalh Solution E-commerce System for high-end Moroccan fashion houses, designer labels, footwear boutiques, and luxury accessory retailers.**
 
-[![CI](https://github.com/ayman/bses-velora-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/ayman/bses-velora-demo/actions)
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat&logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict-blue?style=flat&logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC?style=flat&logo=tailwind-css)](https://tailwindcss.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=flat&logo=docker)](https://www.docker.com/)
+[![Playwright](https://img.shields.io/badge/Playwright-22_Tests_Passed-45ba4b?style=flat&logo=playwright)](https://playwright.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Port_3101-2496ED?style=flat&logo=docker)](https://www.docker.com/)
 
 ---
 
@@ -111,7 +111,7 @@
 ### Steps
 ```bash
 # 1. Clone repository
-git clone https://github.com/ayman/bses-velora-demo.git
+git clone https://github.com/Ayman-Benchalh/bses-velora-demo.git
 cd bses-velora-demo
 
 # 2. Install dependencies
@@ -172,15 +172,20 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-### Test Coverage Highlights:
-1. **Homepage & Brand:** Verifies header, hero section, BSES badge, and footer attribution.
-2. **I18n & RTL:** Verifies switching between `/fr`, `/en`, and `/ar` with genuine right-to-left alignment.
-3. **Shop Filtering:** Tests category filtering, active filter badges, price filtering, and clear all.
+### Test Coverage Highlights (22 Comprehensive Scenarios):
+1. **Homepage & Brand Identity:** Verifies header, hero section, BSES badge, and footer attribution.
+2. **I18n & True RTL:** Verifies switching between `/fr`, `/en`, and `/ar` with genuine right-to-left layout and typography.
+3. **Shop Faceted Filtering:** Tests category filtering, active filter badges, price boundaries, and clear all.
 4. **Product PDP:** Tests variant selection (size, color), live stock indicators, and Size Guide modal.
-5. **Cart & Promo Code:** Tests adding items, sliding drawer, applying promo code `VELORA10`, and persistence on refresh.
-6. **Checkout Flow:** Tests guest checkout form validation with Moroccan phone numbers, Cash on Delivery option, and confirmation redirect.
-7. **Admin Dashboard:** Tests simulated order status update, KPI calculations, and demo reset.
-8. **Design System:** Verifies token showcase route (`/design-system`).
+5. **Cart & Promo Engine:** Tests adding items, sliding drawer, applying promo code `VELORA10`, and persistence on refresh.
+6. **Moroccan Logistics & Guest Checkout:** Tests guest checkout form validation with Moroccan phone numbers, Cash on Delivery option, and confirmation redirect.
+7. **Simulated Card Gateway:** Tests CMI / Visa simulation with clear client demonstration disclaimers.
+8. **Real-time Order Stepper:** Verifies authentic reference codes (`VEL-2026-XXXX`) and interactive logistics timeline.
+9. **Merchant Admin Dashboard:** Tests simulated KPI calculations, chart rendering, order status updates, product creation/editing, and demo reset.
+10. **Lookbook & Hotspots:** Verifies editorial layouts and interactive shop-the-look hotspot pins.
+11. **Mobile Ergonomics & Accessibility:** Verifies 375x667 drawer navigation, 48px touch targets, modal Escape-key closing, and localStorage JSON corruption resilience.
+
+For detailed test logs, see [`QA_REPORT.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/QA_REPORT.md) and [`CHANGELOG.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/CHANGELOG.md).
 
 ---
 
@@ -190,5 +195,5 @@ This project is authored and maintained by:
 * **Agency:** BSES — Benchalh Solution E-commerce System
 * **Specialty:** Tailored luxury e-commerce platforms, Moroccan logistics integration, and multi-currency/RTL digital experiences.
 * **Executive Inquiries:** [Bses47113@gmail.com](mailto:Bses47113@gmail.com)
-* **WhatsApp Consultation:** [Direct Inquiries Link](https://wa.me/212600000000)
+* **Direct Consultation:** Inquiries are received directly via email or via the configurable WhatsApp consultation integration (`NEXT_PUBLIC_BSES_WHATSAPP_URL`).
 

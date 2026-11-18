@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Locale } from "@/types";
 import { t } from "@/lib/translations";
 import { X, Ruler } from "lucide-react";
@@ -14,6 +14,15 @@ interface SizeGuideModalProps {
 
 export function SizeGuideModal({ isOpen, onClose, locale, category = "women" }: SizeGuideModalProps) {
   const [unit, setUnit] = useState<"cm" | "inch">("cm");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 

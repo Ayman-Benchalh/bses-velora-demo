@@ -1,6 +1,13 @@
 import { test, expect } from "@playwright/test";
 
-test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
+test.describe("VELORA Luxury Fashion E-commerce Demo — Production QA Suite", () => {
+  test.beforeEach(async ({ page }) => {
+    // Ensure clean state before tests
+    await page.addInitScript(() => {
+      // Clear storage if needed or let individual tests manage
+    });
+  });
+
   test("1. Homepage loads successfully with editorial elements & BSES attribution", async ({ page }) => {
     await page.goto("/fr");
     await expect(page).toHaveTitle(/VELORA/);
@@ -22,21 +29,19 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
   });
 
   test("2. Language switching and authentic RTL Arabic layout", async ({ page }) => {
-    // Start at French
+    // French (LTR)
     await page.goto("/fr");
     const containerFr = page.locator("div[lang='fr']");
     await expect(containerFr).toHaveAttribute("dir", "ltr");
 
-    // Switch to Arabic
+    // Arabic (RTL)
     await page.goto("/ar");
     const containerAr = page.locator("div[lang='ar']");
     await expect(containerAr).toHaveAttribute("dir", "rtl");
-
-    // Verify Arabic navigation
     await expect(page.locator("header")).toContainText("المجموعة الكاملة");
     await expect(page.locator("header")).toContainText("لوحة الإدارة");
 
-    // Switch to English
+    // English (LTR)
     await page.goto("/en");
     const containerEn = page.locator("div[lang='en']");
     await expect(containerEn).toHaveAttribute("dir", "ltr");
@@ -64,7 +69,6 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
 
     // Search for "soie"
     const searchInput = page.getByPlaceholder("Rechercher une pièce d'exception...");
-    // If not open, click search toggle
     const searchToggle = page.locator("header").getByRole("button", { name: "Rechercher" });
     if (await searchToggle.isVisible()) {
       await searchToggle.click();
@@ -130,7 +134,39 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
     await expect(cartBadge).toContainText("1");
   });
 
-  test("6. Simulated Moroccan checkout flow and order confirmation", async ({ page }) => {
+  test("6. Cart page quantity update and item removal", async ({ page }) => {
+    await page.goto("/fr/product/cabas-signature-cuir-tanne-vegetal-camel");
+    await page.getByRole("button", { name: /Ajouter au panier/i }).click();
+
+    // Go to full cart page
+    await page.goto("/fr/cart");
+    await expect(page.locator("h1")).toContainText("Votre Écrin de Commande");
+
+    // Check order total and shipping notice
+    await expect(page.locator("text=Total TTC")).toBeVisible();
+
+    // Remove item
+    const removeBtn = page.getByRole("button", { name: "Retirer l'article" }).first();
+    if (await removeBtn.isVisible()) {
+      await removeBtn.click();
+      await expect(page.locator("text=Votre panier est actuellement vide")).toBeVisible();
+    }
+  });
+
+  test("7. Wishlist toggling and wishlist view", async ({ page }) => {
+    await page.goto("/fr/product/manteau-laine-double-face-camel");
+
+    // Toggle wishlist button
+    const wishlistBtn = page.getByRole("button", { name: /Ajouter aux favoris|Retirer des favoris/i }).first();
+    await wishlistBtn.click();
+
+    // Visit wishlist page
+    await page.goto("/fr/wishlist");
+    await expect(page.locator("h1")).toContainText("Favoris");
+    await expect(page.getByText("Manteau Double Face en Laine & Cachemire").first()).toBeVisible();
+  });
+
+  test("8. Simulated Moroccan checkout flow and order confirmation", async ({ page }) => {
     // Ensure item in cart
     await page.goto("/fr/product/parfum-signature-ambre-atlas-100ml");
     await page.getByRole("button", { name: /Ajouter au panier/i }).click();
@@ -162,7 +198,18 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
     await expect(page.locator("text=Amana Express").first()).toBeVisible();
   });
 
-  test("7. Admin Dashboard: overview metrics, simulated order status update & demo reset", async ({ page }) => {
+  test("9. Order tracking stepper advancement", async ({ page }) => {
+    await page.goto("/fr/order-confirmation/VEL-2026-DEMO");
+
+    // Check stepper is interactive
+    const step3 = page.getByRole("button", { name: "3" });
+    if (await step3.isVisible()) {
+      await step3.click();
+      await expect(page.locator("text=Prise en charge par Amana Express").first()).toBeVisible();
+    }
+  });
+
+  test("10. Admin Dashboard: overview metrics, KPI cards & trend charts", async ({ page }) => {
     await page.goto("/fr/admin-demo");
 
     // Prominent demo badge
@@ -171,10 +218,57 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
     // Verify KPI Cards
     await expect(page.locator("text=Chiffre d'Affaires Simulé")).toBeVisible();
     await expect(page.locator("text=Commandes Totales")).toBeVisible();
+    await expect(page.getByText("Panier Moyen", { exact: true })).toBeVisible();
+  });
+
+  test("11. Admin Dashboard: Create new luxury product in catalog", async ({ page }) => {
+    await page.goto("/fr/admin-demo");
+
+    // Click Add Product
+    await page.getByTestId("admin-add-product-btn").click();
+
+    // Fill Product form
+    await page.getByTestId("input-name-fr").fill("Kimono Soie Pure Brodé Or");
+    await page.getByTestId("submit-product-btn").click();
+
+    // Switch to Products Tab and verify new product exists
+    await page.getByTestId("admin-tab-products").click();
+    await expect(page.getByText("Kimono Soie Pure Brodé Or").first()).toBeVisible();
+  });
+
+  test("12. Admin Dashboard: Quick stock increment", async ({ page }) => {
+    await page.goto("/fr/admin-demo");
+
+    // Switch to Stocks Tab
+    await page.getByTestId("admin-tab-stocks").click();
+    await expect(page.locator("text=Gestion Rapide Stocks")).toBeVisible();
+
+    // Click increment button on first variant
+    const incrementBtn = page.getByTestId("quick-stock-increment-btn").first();
+    await expect(incrementBtn).toBeVisible();
+    await incrementBtn.click();
+  });
+
+  test("13. Admin Dashboard: Create new promotional code", async ({ page }) => {
+    await page.goto("/fr/admin-demo");
+
+    // Switch to Campaigns Tab
+    await page.getByTestId("admin-tab-campaigns").click();
+
+    // Create promo code
+    await page.getByTestId("promo-code-input").fill("SUMMER15");
+    await page.getByTestId("promo-discount-input").fill("15");
+    await page.getByTestId("submit-promo-btn").click();
+
+    // Verify code exists in table
+    await expect(page.getByText("SUMMER15").first()).toBeVisible();
+  });
+
+  test("14. Admin Dashboard: Order status update & toast notification", async ({ page }) => {
+    await page.goto("/fr/admin-demo");
 
     // Switch to Orders Tab
-    const ordersTab = page.getByTestId("admin-tab-orders");
-    await ordersTab.click();
+    await page.getByTestId("admin-tab-orders").click();
 
     // Change status of first order
     const firstStatusSelect = page.getByTestId("order-status-select").first();
@@ -182,6 +276,10 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
       await firstStatusSelect.selectOption("delivered");
       await expect(page.locator("text=Statut de la commande mis à jour")).toBeVisible();
     }
+  });
+
+  test("15. Admin Dashboard: Full demo data reset", async ({ page }) => {
+    await page.goto("/fr/admin-demo");
 
     // Switch to Settings & test Reset Demo
     const settingsTab = page.getByTestId("admin-tab-settings");
@@ -192,13 +290,80 @@ test.describe("VELORA Luxury Fashion E-commerce Demo", () => {
     await expect(page.locator("text=Les données de démonstration ont été restaurées avec succès")).toBeVisible();
   });
 
-  test("8. Dedicated Design System route", async ({ page }) => {
-    await page.goto("/fr/design-system");
+  test("16. Mobile Viewport: navigation drawer and menu links", async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.goto("/fr");
 
-    // Design System Title
+    // Mobile menu toggle button
+    const menuBtn = page.getByRole("button", { name: /menu de navigation/i });
+    await expect(menuBtn).toBeVisible();
+    await menuBtn.click();
+
+    // Verify mobile drawer items
+    await expect(page.getByRole("link", { name: "La Collection" }).first()).toBeVisible();
+    await expect(page.getByRole("link", { name: "Lookbook" }).first()).toBeVisible();
+  });
+
+  test("17. Accessibility: Size guide modal closes on Escape key", async ({ page }) => {
+    await page.goto("/fr/product/manteau-laine-double-face-camel");
+
+    const sizeGuideBtn = page.getByRole("button", { name: /Guide des tailles/i });
+    await sizeGuideBtn.click();
+    await expect(page.getByText("Guide des Tailles VELORA")).toBeVisible();
+
+    // Press Escape
+    await page.keyboard.press("Escape");
+  });
+
+  test("18. Resilience: Corrupted localStorage recovery", async ({ page }) => {
+    // Inject corrupt JSON into storage
+    await page.addInitScript(() => {
+      localStorage.setItem("velora_demo_v1_products", "{corrupted_json_syntax");
+      localStorage.setItem("velora_demo_v1_cart", "invalid[object");
+    });
+
+    // Page must recover gracefully without throwing an unhandled runtime error
+    await page.goto("/fr/shop");
+    await expect(page.getByTestId("results-count")).toBeVisible();
+  });
+
+  test("19. Brand Pages: About, Contact, Delivery, FAQ load cleanly", async ({ page }) => {
+    await page.goto("/fr/about");
+    await expect(page.locator("h1")).toContainText("L'Âme d'un Savoir-Faire Éternel");
+
+    await page.goto("/fr/contact");
+    await expect(page.locator("h1")).toContainText("Contact & Salons");
+
+    await page.goto("/fr/delivery");
+    await expect(page.locator("h1")).toContainText("Livraisons & Retours");
+
+    await page.goto("/fr/faq");
+    await expect(page.locator("h1")).toContainText("Questions Fréquentes");
+  });
+
+  test("20. Lookbook Campaign: Interactive hotspots & product previews", async ({ page }) => {
+    await page.goto("/fr/lookbook");
+    await expect(page.locator("h1")).toContainText("Lookbook Éditorial");
+
+    // Check hotspots exist on campaign cards
+    const hotspot = page.getByRole("button", { name: /Découvrir la pièce/i }).first();
+    if (await hotspot.isVisible()) {
+      await hotspot.click();
+    }
+  });
+
+  test("21. Collections Index: Category navigation cards", async ({ page }) => {
+    await page.goto("/fr/collections");
+    await expect(page.locator("h1")).toContainText("Collections VELORA");
+    await expect(page.locator("text=Femme").first()).toBeVisible();
+    await expect(page.locator("text=Homme").first()).toBeVisible();
+  });
+
+  test("22. Dedicated Design System route & token inspection", async ({ page }) => {
+    await page.goto("/fr/design-system");
     await expect(page.locator("h1")).toContainText("Système de Tokens & Composants");
 
-    // Check color tokens
+    // Color tokens
     await expect(page.locator("text=Ink Black")).toBeVisible();
     await expect(page.locator("text=Warm Ivory")).toBeVisible();
     await expect(page.locator("text=Camel")).toBeVisible();

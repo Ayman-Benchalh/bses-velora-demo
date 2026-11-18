@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Product, ProductCategory, Locale } from "@/types";
 import { X, Save } from "lucide-react";
 
@@ -31,6 +31,15 @@ export function ProductFormModal({ product, isOpen, onClose, onSave, locale: _lo
     product ? product.variants.reduce((s, v) => s + v.stock, 0).toString() : "12"
   );
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -172,6 +181,7 @@ export function ProductFormModal({ product, isOpen, onClose, onSave, locale: _lo
               <label className="font-semibold text-ink block">Nom de la pièce (Français) *</label>
               <input
                 type="text"
+                data-testid="input-name-fr"
                 value={nameFr}
                 onChange={(e) => setNameFr(e.target.value)}
                 placeholder="ex: Manteau Double Face en Laine & Cachemire"
@@ -305,6 +315,7 @@ export function ProductFormModal({ product, isOpen, onClose, onSave, locale: _lo
             </button>
             <button
               type="submit"
+              data-testid="submit-product-btn"
               className="py-2.5 px-6 bg-ink text-white hover:bg-camel text-xs uppercase tracking-widest font-semibold flex items-center gap-2 transition-colors shadow-sm"
             >
               <Save className="w-3.5 h-3.5" />

@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { CartItem, Product } from "@/types";
 import { useStore } from "./StoreContext";
+import { STORAGE_KEYS } from "@/lib/constants";
+import { safeGetStorage, safeSetStorage, safeRemoveStorage } from "@/lib/storage";
 
 interface CartContextType {
   items: CartItem[];
@@ -26,8 +28,6 @@ interface CartContextType {
   freeShippingRemaining: number;
 }
 
-const CART_STORAGE_KEY = "velora_demo_cart";
-const PROMO_STORAGE_KEY = "velora_demo_promo";
 const FREE_SHIPPING_THRESHOLD = 1000;
 const STANDARD_SHIPPING_FEE = 40;
 
@@ -40,31 +40,21 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [discountPercentage, setDiscountPercentage] = useState<number>(0);
   const { campaigns } = useStore();
 
-  // Load cart from localStorage
+  // Load cart from localStorage with corruption protection
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(CART_STORAGE_KEY);
-      if (stored) {
-        setItems(JSON.parse(stored));
-      }
-      const storedPromo = localStorage.getItem(PROMO_STORAGE_KEY);
-      if (storedPromo) {
-        const parsed = JSON.parse(storedPromo);
-        setPromoCode(parsed.code);
-        setDiscountPercentage(parsed.percentage);
-      }
-    } catch (e) {
-      console.warn("Could not load cart from localStorage", e);
+    const loadedItems = safeGetStorage<CartItem[]>(STORAGE_KEYS.CART, []);
+    setItems(loadedItems);
+
+    const loadedPromo = safeGetStorage<{ code: string; percentage: number } | null>(STORAGE_KEYS.PROMO, null);
+    if (loadedPromo) {
+      setPromoCode(loadedPromo.code);
+      setDiscountPercentage(loadedPromo.percentage);
     }
   }, []);
 
   const saveCart = (newItems: CartItem[]) => {
     setItems(newItems);
-    try {
-      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(newItems));
-    } catch (e) {
-      console.error(e);
-    }
+    safeSetStorage(STORAGE_KEYS.CART, newItems);
   };
 
   const openDrawer = () => setIsDrawerOpen(true);
@@ -76,19 +66,32 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const itemId = `${product.id}-${size}-${color}`;
 
     const existingIndex = items.findIndex((i) => i.id === itemId);
+    const matchingVariant = product.variants.find(
+      (v) =>
+        v.size === size &&
+        (v.color === color ||
+          v.colorHex === color ||
+          v.colorName.fr === color ||
+          v.colorName.en === color ||
+          v.colorName.ar === color)
+    );
+    const maxStock = matchingVariant ? matchingVariant.stock : 99;
 
     let updated: CartItem[];
     if (existingIndex > -1) {
+      const currentQty = items[existingIndex].quantity;
+      const targetQty = Math.min(currentQty + quantity, maxStock);
       updated = [...items];
-      updated[existingIndex].quantity += quantity;
+      updated[existingIndex].quantity = Math.max(1, targetQty);
     } else {
+      const initialQty = Math.min(Math.max(1, quantity), maxStock);
       const newItem: CartItem = {
         id: itemId,
         productId: product.id,
         product,
         selectedSize: size,
         selectedColor: color,
-        quantity,
+        quantity: initialQty,
         price: effectivePrice,
       };
       updated = [newItem, ...items];
@@ -108,7 +111,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       removeItem(itemId);
       return;
     }
-    const updated = items.map((i) => (i.id === itemId ? { ...i, quantity } : i));
+    const targetItem = items.find((i) => i.id === itemId);
+    const matchingVariant = targetItem?.product.variants.find(
+      (v) =>
+        v.size === targetItem.selectedSize &&
+        (v.color === targetItem.selectedColor ||
+          v.colorHex === targetItem.selectedColor ||
+          v.colorName.fr === targetItem.selectedColor ||
+          v.colorName.en === targetItem.selectedColor ||
+          v.colorName.ar === targetItem.selectedColor)
+    );
+    const maxStock = matchingVariant ? matchingVariant.stock : 99;
+    const boundedQty = Math.min(quantity, maxStock);
+
+    const updated = items.map((i) => (i.id === itemId ? { ...i, quantity: boundedQty } : i));
     saveCart(updated);
   };
 
@@ -116,9 +132,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     saveCart([]);
     setPromoCode(null);
     setDiscountPercentage(0);
-    try {
-      localStorage.removeItem(PROMO_STORAGE_KEY);
-    } catch {}
+    safeRemoveStorage(STORAGE_KEYS.PROMO);
   };
 
   const applyPromoCode = (code: string) => {
@@ -128,12 +142,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (active) {
       setPromoCode(active.code);
       setDiscountPercentage(active.discountPercentage);
-      try {
-        localStorage.setItem(
-          PROMO_STORAGE_KEY,
-          JSON.stringify({ code: active.code, percentage: active.discountPercentage })
-        );
-      } catch {}
+      safeSetStorage(STORAGE_KEYS.PROMO, { code: active.code, percentage: active.discountPercentage });
       return { success: true, discount: active.discountPercentage };
     }
 
@@ -141,12 +150,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     if (cleanCode === "VELORA10") {
       setPromoCode("VELORA10");
       setDiscountPercentage(10);
-      try {
-        localStorage.setItem(
-          PROMO_STORAGE_KEY,
-          JSON.stringify({ code: "VELORA10", percentage: 10 })
-        );
-      } catch {}
+      safeSetStorage(STORAGE_KEYS.PROMO, { code: "VELORA10", percentage: 10 });
       return { success: true, discount: 10 };
     }
 
@@ -156,9 +160,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const removePromoCode = () => {
     setPromoCode(null);
     setDiscountPercentage(0);
-    try {
-      localStorage.removeItem(PROMO_STORAGE_KEY);
-    } catch {}
+    safeRemoveStorage(STORAGE_KEYS.PROMO);
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
