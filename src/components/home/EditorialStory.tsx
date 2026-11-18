@@ -103,7 +103,7 @@ export function EditorialStory({ locale }: EditorialStoryProps) {
                 href={`/${locale}/about`}
                 className="inline-flex items-center gap-2 px-6 py-3.5 bg-ink text-white text-xs uppercase tracking-widest font-semibold hover:bg-camel transition-colors shadow-sm"
               >
-                <span>Découvrir l&apos;histoire de la Maison</span>
+                <span>{t(locale, "home.discoverHistory")}</span>
                 <ArrowRight className="w-4 h-4 rtl:rotate-180" />
               </Link>
             </div>

@@ -8,6 +8,10 @@ import { useCart } from "@/context/CartContext";
 import { useWishlist } from "@/context/WishlistContext";
 import { t } from "@/lib/translations";
 import {
+  BSES_OFFICIAL_PHONE_DISPLAY,
+  getBsesWhatsAppUrl,
+} from "@/lib/constants";
+import {
   ShoppingBag,
   Heart,
   Menu,
@@ -15,6 +19,7 @@ import {
   Search,
   ChevronDown,
   LayoutDashboard,
+  MessageCircle,
 } from "lucide-react";
 
 interface HeaderProps {
@@ -52,6 +57,31 @@ export function Header({ locale }: HeaderProps) {
     setIsCategoryMenuOpen(false);
     setIsSearchOpen(false);
   }, [pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // Close menus on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMobileMenuOpen(false);
+        setIsCategoryMenuOpen(false);
+        setIsSearchOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const categories = [
     { slug: "women", label: t(locale, "nav.women") },
@@ -241,7 +271,7 @@ export function Header({ locale }: HeaderProps) {
           />
 
           {/* Drawer content */}
-          <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto z-10 rtl:left-auto rtl:right-0">
+          <div data-testid="mobile-drawer" className="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto z-10 rtl:left-auto rtl:right-0">
             <div>
               <div className="flex items-center justify-between pb-5 border-b border-ivory-dark">
                 <Link
@@ -316,11 +346,23 @@ export function Header({ locale }: HeaderProps) {
 
                 <Link
                   href={`/${locale}/admin-demo`}
-                  className="flex items-center gap-2 py-2 px-3 bg-ivory text-camel font-semibold tracking-wider hover:bg-camel hover:text-white transition-colors"
+                  className="flex items-center gap-2 py-3 px-3 bg-ivory text-camel font-semibold tracking-wider hover:bg-camel hover:text-white transition-colors min-h-[44px]"
                 >
                   <LayoutDashboard className="w-4 h-4" />
                   <span>{t(locale, "nav.adminDemo")}</span>
                 </Link>
+
+                {/* Direct WhatsApp Consultation in Mobile Drawer */}
+                <a
+                  href={getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 py-3 px-3 bg-ink text-white text-xs font-mono tracking-wider hover:bg-camel transition-colors min-h-[44px]"
+                  aria-label="Contacter BSES sur WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4 text-camel" />
+                  <span>WhatsApp BSES ({BSES_OFFICIAL_PHONE_DISPLAY})</span>
+                </a>
               </div>
             </div>
 
@@ -331,21 +373,27 @@ export function Header({ locale }: HeaderProps) {
                 <div className="flex items-center gap-2">
                   <Link
                     href={`/fr${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={locale === "fr" ? "font-bold text-camel underline" : ""}
+                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
+                      locale === "fr" ? "font-bold text-camel underline" : ""
+                    }`}
                   >
                     FR
                   </Link>
                   <span>·</span>
                   <Link
                     href={`/en${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={locale === "en" ? "font-bold text-camel underline" : ""}
+                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
+                      locale === "en" ? "font-bold text-camel underline" : ""
+                    }`}
                   >
                     EN
                   </Link>
                   <span>·</span>
                   <Link
                     href={`/ar${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={locale === "ar" ? "font-bold text-camel underline" : ""}
+                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
+                      locale === "ar" ? "font-bold text-camel underline" : ""
+                    }`}
                   >
                     العربية
                   </Link>

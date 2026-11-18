@@ -91,10 +91,10 @@ export function DeliveryView({ locale }: DeliveryViewProps) {
           </h3>
           <div className="text-xs text-muted-dark space-y-2.5">
             <p>
-              Pour votre sérénité totale, réglez votre commande directement auprès du transporteur à la livraison de votre colis scellé.
+              Pour votre sérénité totale, réglez votre commande directement auprès du transporteur à la livraison de votre colis scellé (Paiement simulé).
             </p>
             <p>
-              Un SMS avec le numéro de suivi Amana Express vous est envoyé dès que votre commande quitte nos ateliers de confection.
+              Dans un déploiement client en production, un SMS automatique avec le lien de suivi en direct (ex: Amana Express ou coursier dédié) est expédié au destinataire dès la validation en atelier.
             </p>
           </div>
         </div>

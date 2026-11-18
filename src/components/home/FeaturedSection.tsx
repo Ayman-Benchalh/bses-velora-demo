@@ -32,7 +32,7 @@ export function FeaturedSection({ products, locale }: FeaturedSectionProps) {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 mb-12 sm:mb-16">
           <div className="text-center sm:text-left space-y-1">
             <span className="text-xs uppercase font-mono tracking-[0.25em] text-camel font-semibold">
-              SÉLECTION EXCLUSIVE
+              {t(locale, "home.exclusiveSelection")}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-ink">
               {t(locale, "home.featuredTitle")}

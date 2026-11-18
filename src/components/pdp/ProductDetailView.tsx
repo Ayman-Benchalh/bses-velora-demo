@@ -401,7 +401,7 @@ export function ProductDetailView({ product, relatedProducts, locale }: ProductD
                       <strong>Atelier & Façon :</strong> {product.origin[locale] || product.origin.fr}
                     </p>
                     <p>
-                      Chaque pièce est supervisée par notre maître tailleur à Casablanca et respecte les traditions de confection les plus exigeantes.
+                      {t(locale, "pdp.atelierCraftDetails")}
                     </p>
                   </div>
                 )}
@@ -409,13 +409,13 @@ export function ProductDetailView({ product, relatedProducts, locale }: ProductD
                 {activeTab === "delivery" && (
                   <div className="space-y-2">
                     <p>
-                      <strong>Transporteur express :</strong> Amana Express avec numéro de suivi sms.
+                      <strong>Transporteur express :</strong> {t(locale, "pdp.deliveryCarrier")}
                     </p>
                     <p>
-                      <strong>Délai :</strong> 24h à Casablanca et Rabat, 48h dans les autres villes du Maroc.
+                      <strong>Délai :</strong> {t(locale, "pdp.deliveryDelay")}
                     </p>
                     <p>
-                      <strong>Retours :</strong> 14 jours pour essayer et retourner gratuitement vos pièces.
+                      <strong>Retours :</strong> {t(locale, "pdp.returnsNotice")}
                     </p>
                   </div>
                 )}
@@ -429,7 +429,7 @@ export function ProductDetailView({ product, relatedProducts, locale }: ProductD
           <section className="mt-20 pt-12 border-t border-ivory-dark">
             <div className="text-center space-y-2 mb-10">
               <span className="text-xs uppercase font-mono tracking-widest text-camel font-semibold">
-                STYLISME & SILHOUETTES
+                {t(locale, "pdp.stylingAndSilhouettes")}
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-ink">
                 {t(locale, "pdp.relatedTitle")}

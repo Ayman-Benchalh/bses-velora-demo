@@ -5,25 +5,32 @@
 
 export const BSES_AGENCY_NAME = "BSES — Benchalh Solution E-commerce System";
 export const BSES_CONTACT_EMAIL = "Bses47113@gmail.com";
+export const BSES_OFFICIAL_PHONE = "+212694991485";
+export const BSES_OFFICIAL_PHONE_DISPLAY = "+212 694-991485";
+export const BSES_OFFICIAL_WHATSAPP_BASE = "https://wa.me/212694991485";
+export const BSES_DEFAULT_WHATSAPP_MESSAGE =
+  "Bonjour BSES, je viens de découvrir votre démonstration VELORA et je souhaite discuter de la création d'une boutique e-commerce similaire.";
 
 /**
- * Returns a configured agency WhatsApp URL only when a verified, approved URL is provided in the environment.
- * Rejects placeholder or non-configured numbers to uphold demonstration honesty.
+ * Returns the official BSES agency WhatsApp URL with a prefilled message.
+ * Never falls back to any placeholder or invalid phone number.
  */
-export function getBsesWhatsAppUrl(message?: string): string | null {
+export function getBsesWhatsAppUrl(customMessage?: string): string {
   const envUrl = process.env.NEXT_PUBLIC_BSES_WHATSAPP_URL || process.env.NEXT_PUBLIC_AGENCY_WHATSAPP;
-  if (!envUrl || envUrl.trim() === "" || envUrl.includes("212600000000") || envUrl.includes("00000000")) {
-    return null;
-  }
+  
+  // Guard against any obsolete placeholder strings
+  const baseUrl = (!envUrl || envUrl.includes("212600000000") || envUrl.includes("00000000"))
+    ? BSES_OFFICIAL_WHATSAPP_BASE
+    : envUrl.trim();
+
+  const message = customMessage || BSES_DEFAULT_WHATSAPP_MESSAGE;
 
   try {
-    const url = new URL(envUrl);
-    if (message) {
-      url.searchParams.set("text", message);
-    }
+    const url = new URL(baseUrl);
+    url.searchParams.set("text", message);
     return url.toString();
   } catch {
-    return envUrl;
+    return `${BSES_OFFICIAL_WHATSAPP_BASE}?text=${encodeURIComponent(message)}`;
   }
 }
 
@@ -59,4 +66,3 @@ export const M3_MEASUREMENTS = {
     complex: 500,
   },
 } as const;
-

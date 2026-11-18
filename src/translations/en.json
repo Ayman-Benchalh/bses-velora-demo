@@ -89,7 +89,13 @@
     "newsletterButton": "Subscribe",
     "newsletterSuccess": "Thank you for subscribing to VELORA previews.",
     "newArrivals": "New Arrivals",
-    "bestSellers": "Iconic Pieces"
+    "bestSellers": "Iconic Pieces",
+    "exclusiveSelection": "EXCLUSIVE SELECTION",
+    "discover": "Discover",
+    "explore": "Explore",
+    "discoverHistory": "Discover Maison History",
+    "silhouettesCount": "Silhouettes",
+    "modelsCount": "Models"
   },
   "shop": {
     "title": "The Full Collection",
@@ -114,7 +120,20 @@
     "showingResults": "pieces displayed",
     "noProductsFound": "No pieces match your selected criteria.",
     "resetFilters": "Reset all filters",
-    "activeFilters": "Active filters"
+    "activeFilters": "Active filters",
+    "sizesApparel": "Garments",
+    "sizesShoes": "Footwear",
+    "sizesAccessories": "Accessories"
+  },
+  "collections": {
+    "title": "Collections & Capsules",
+    "subtitle": "Discover our seasonal lines and signature editions",
+    "springSummer2026": "Spring-Summer 2026 Edition",
+    "newArrivalsTitle": "New Arrivals",
+    "newArrivalsDesc": "Fresh creations from our Fez and Casablanca ateliers, crafted in raw silk and Italian wools.",
+    "discoverCapsule": "Discover Capsule",
+    "exploreLine": "Explore Line",
+    "creationsCount": "Creations"
   },
   "pdp": {
     "sku": "Reference",
@@ -125,10 +144,15 @@
     "materialsAndCare": "Materials & Care",
     "originAndCraft": "Origin & Craftsmanship",
     "deliveryAndReturns": "Delivery & Returns in Morocco",
-    "deliveryDetails": "Secure delivery within 24h to 48h (Amana Express). Free shipping over 1,000 MAD. 14-day hassle-free returns.",
-    "paymentDetails": "Cash on Delivery (Paiement à la livraison) or Moroccan/international credit cards.",
+    "deliveryDetails": "Simulated express delivery within 24h to 48h (e.g. Amana Express). Free shipping over 1,000 MAD. 14-day hassle-free returns (Demo).",
+    "paymentDetails": "Simulated Cash on Delivery (Paiement à la livraison) or Moroccan / international payment cards.",
     "relatedTitle": "Complete the Look",
     "relatedSubtitle": "Styling suggestions from our design studio",
+    "stylingAndSilhouettes": "STYLING & SILHOUETTES",
+    "atelierCraftDetails": "Each garment is overseen by our master tailor in Casablanca and adheres to the most demanding tailoring traditions.",
+    "deliveryCarrier": "Simulated express carrier (e.g. Amana Express with SMS tracking simulation)",
+    "deliveryDelay": "24h in Casablanca and Rabat, 48h in other Moroccan cities (Simulated)",
+    "returnsNotice": "14-day complimentary trial and return window (Demonstration).",
     "share": "Share",
     "lowStockWarning": "Only {count} items remaining in this size",
     "outOfStockAlert": "This size is currently unavailable.",
@@ -254,7 +278,7 @@
     "resetSeed": "Reset Demo Data",
     "dialogTitle": "Elevate Your Brand with BSES",
     "dialogBody": "This showcase illustrates our expertise in haute-couture digital aesthetics, ultra-fluid mobile UX, flawless Arabic RTL typography, and frictionless Moroccan checkout mechanisms (Cash on Delivery, regional logistics). Contact our engineers to build your custom platform.",
-    "whatsappMessage": "Hello BSES, I explored the VELORA demo and would like to discuss an e-commerce platform for my brand."
+    "whatsappMessage": "Hello BSES, I just explored your VELORA demonstration and would like to discuss creating a similar e-commerce boutique."
   }
 }
 

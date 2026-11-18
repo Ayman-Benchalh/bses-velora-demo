@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Locale } from "@/types";
+import { t } from "@/lib/translations";
 import { CATEGORIES } from "@/data/categories";
 import { ArrowRight, Sparkles } from "lucide-react";
 
@@ -42,19 +43,19 @@ export default async function CollectionsPage({ params }: CollectionsPageProps) 
         <div className="absolute inset-0 bg-gradient-to-r from-ink via-ink/60 to-transparent" />
         <div className="absolute inset-x-8 bottom-8 sm:bottom-12 max-w-md space-y-3">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-camel text-white text-[10px] uppercase font-mono font-semibold">
-            <Sparkles className="w-3 h-3" /> Édition Printemps-Été 2026
+            <Sparkles className="w-3 h-3" /> {t(locale, "collections.springSummer2026")}
           </span>
           <h2 className="font-serif text-2xl sm:text-4xl font-bold">
-            Nouveaux Arrivages
+            {t(locale, "collections.newArrivalsTitle")}
           </h2>
           <p className="text-xs text-ivory/80 leading-relaxed font-light">
-            Les créations fraîches de nos ateliers de Fès et Casablanca, en soies sauvages et laines d&apos;Italie.
+            {t(locale, "collections.newArrivalsDesc")}
           </p>
           <Link
             href={`/${locale}/shop?category=all`}
             className="inline-flex items-center gap-2 pt-1 text-xs text-camel uppercase tracking-widest font-semibold hover:text-white transition-colors"
           >
-            <span>Découvrir la capsule</span>
+            <span>{t(locale, "collections.discoverCapsule")}</span>
             <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
           </Link>
         </div>
@@ -77,7 +78,7 @@ export default async function CollectionsPage({ params }: CollectionsPageProps) 
             <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent" />
             <div className="absolute inset-x-6 bottom-6 text-white space-y-2">
               <span className="text-[10px] uppercase font-mono tracking-widest text-camel-light">
-                {cat.itemCount} Créations
+                {cat.itemCount} {t(locale, "collections.creationsCount")}
               </span>
               <h3 className="font-serif text-2xl font-bold">
                 {cat.name[locale] || cat.name.fr}
@@ -89,7 +90,7 @@ export default async function CollectionsPage({ params }: CollectionsPageProps) 
                 href={`/${locale}/shop?category=${cat.slug}`}
                 className="pt-2 inline-flex items-center gap-1.5 text-xs text-camel uppercase tracking-widest font-semibold hover:text-white transition-colors"
               >
-                <span>Explorer la ligne</span>
+                <span>{t(locale, "collections.exploreLine")}</span>
                 <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
               </Link>
             </div>

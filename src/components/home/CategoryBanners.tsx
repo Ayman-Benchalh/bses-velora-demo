@@ -42,7 +42,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
             <div className="absolute inset-x-6 bottom-6 text-white space-y-1.5">
               <span className="text-[10px] uppercase font-mono tracking-widest text-camel-light">
-                {CATEGORIES[0].itemCount} Silhouettes
+                {CATEGORIES[0].itemCount} {t(locale, "home.silhouettesCount")}
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold">
                 {CATEGORIES[0].name[locale] || CATEGORIES[0].name.fr}
@@ -54,7 +54,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
                 href={`/${locale}/shop?category=${CATEGORIES[0].slug}`}
                 className="pt-2 inline-flex items-center gap-1.5 text-xs text-camel uppercase tracking-widest font-semibold hover:text-white transition-colors"
               >
-                <span>Découvrir</span>
+                <span>{t(locale, "home.discover")}</span>
                 <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
               </Link>
             </div>
@@ -72,7 +72,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
             <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent" />
             <div className="absolute inset-x-6 bottom-6 text-white space-y-1.5">
               <span className="text-[10px] uppercase font-mono tracking-widest text-camel-light">
-                {CATEGORIES[1].itemCount} Silhouettes
+                {CATEGORIES[1].itemCount} {t(locale, "home.silhouettesCount")}
               </span>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold">
                 {CATEGORIES[1].name[locale] || CATEGORIES[1].name.fr}
@@ -84,7 +84,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
                 href={`/${locale}/shop?category=${CATEGORIES[1].slug}`}
                 className="pt-2 inline-flex items-center gap-1.5 text-xs text-camel uppercase tracking-widest font-semibold hover:text-white transition-colors"
               >
-                <span>Découvrir</span>
+                <span>{t(locale, "home.discover")}</span>
                 <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
               </Link>
             </div>
@@ -106,7 +106,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/30 to-transparent" />
               <div className="absolute inset-x-5 bottom-5 text-white space-y-1">
                 <span className="text-[9px] uppercase font-mono tracking-widest text-camel-light">
-                  {cat.itemCount} Modèles
+                  {cat.itemCount} {t(locale, "home.modelsCount")}
                 </span>
                 <h4 className="font-serif text-xl font-bold">
                   {cat.name[locale] || cat.name.fr}
@@ -115,7 +115,7 @@ export function CategoryBanners({ locale }: CategoryBannersProps) {
                   href={`/${locale}/shop?category=${cat.slug}`}
                   className="inline-flex items-center gap-1 text-[11px] text-camel uppercase tracking-wider font-semibold hover:text-white transition-colors"
                 >
-                  <span>Explorer</span>
+                  <span>{t(locale, "home.explore")}</span>
                   <ArrowRight className="w-3 h-3 rtl:rotate-180" />
                 </Link>
               </div>

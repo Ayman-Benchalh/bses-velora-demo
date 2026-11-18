@@ -66,7 +66,7 @@ export function OrderConfirmationView({ orderNumber, locale }: OrderConfirmation
       status: "shipped",
       icon: Truck,
       title: t(locale, "orderConfirmation.statusShipped"),
-      desc: `Numéro Amana Express : AM-${order.orderNumber.replace("VEL-", "")}MA`,
+      desc: `Numéro de suivi (Simulé) : AM-${order.orderNumber.replace("VEL-", "")}MA`,
     },
     {
       status: "in_delivery",

@@ -300,12 +300,12 @@ export function CartPageView({ locale }: CartPageViewProps) {
 
             <div className="pt-2 space-y-2 text-[11px] text-muted border-t border-ivory-dark">
               <div className="flex items-center gap-2">
-                <Truck className="w-3.5 h-3.5 text-camel" />
-                <span>Livraison Amana Express sous 24-48h</span>
+                <Truck className="w-3.5 h-3.5 text-camel flex-shrink-0" />
+                <span>Livraison express simulée sous 24-48h</span>
               </div>
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-3.5 h-3.5 text-camel" />
-                <span>Paiement à la livraison sécurisé</span>
+                <ShieldCheck className="w-3.5 h-3.5 text-camel flex-shrink-0" />
+                <span>Paiement à la livraison simulé (Démonstration)</span>
               </div>
             </div>
           </div>

@@ -89,7 +89,13 @@
     "newsletterButton": "S'inscrire",
     "newsletterSuccess": "Merci pour votre inscription à la newsletter VELORA.",
     "newArrivals": "Nouveautés",
-    "bestSellers": "Pièces Iconiques"
+    "bestSellers": "Pièces Iconiques",
+    "exclusiveSelection": "SÉLECTION EXCLUSIVE",
+    "discover": "Découvrir",
+    "explore": "Explorer",
+    "discoverHistory": "Découvrir l'histoire de la Maison",
+    "silhouettesCount": "Silhouettes",
+    "modelsCount": "Modèles"
   },
   "shop": {
     "title": "La Collection Complète",
@@ -114,7 +120,20 @@
     "showingResults": "articles présentés",
     "noProductsFound": "Aucune pièce ne correspond à vos critères de recherche.",
     "resetFilters": "Réinitialiser tous les filtres",
-    "activeFilters": "Filtres actifs"
+    "activeFilters": "Filtres actifs",
+    "sizesApparel": "Vêtements",
+    "sizesShoes": "Souliers",
+    "sizesAccessories": "Accessoires"
+  },
+  "collections": {
+    "title": "Collections & Capsules",
+    "subtitle": "Explorez nos lignes saisonnières et éditions limitées",
+    "springSummer2026": "Édition Printemps-Été 2026",
+    "newArrivalsTitle": "Nouveaux Arrivages",
+    "newArrivalsDesc": "Les créations fraîches de nos ateliers de Fès et Casablanca, en soies sauvages et laines d'Italie.",
+    "discoverCapsule": "Découvrir la capsule",
+    "exploreLine": "Explorer la ligne",
+    "creationsCount": "Créations"
   },
   "pdp": {
     "sku": "Référence",
@@ -125,10 +144,15 @@
     "materialsAndCare": "Matières & Entretien",
     "originAndCraft": "Origine & Confection",
     "deliveryAndReturns": "Livraison & Retours au Maroc",
-    "deliveryDetails": "Livraison sécurisée sous 24h à 48h (Amana Express). Livraison offerte dès 1 000 MAD. Retours offerts sous 14 jours.",
-    "paymentDetails": "Paiement en espèces à la livraison (Cash on Delivery) ou par carte bancaire marocaine / internationale.",
+    "deliveryDetails": "Livraison express simulée sous 24h à 48h (ex: Amana Express). Livraison offerte dès 1 000 MAD. Retours offerts sous 14 jours (Démonstration).",
+    "paymentDetails": "Paiement simulé en espèces à la livraison (Cash on Delivery) ou par carte bancaire marocaine / internationale.",
     "relatedTitle": "Compléter la Silhouette",
     "relatedSubtitle": "Pièces recommandées par notre studio de style",
+    "stylingAndSilhouettes": "STYLISME & SILHOUETTES",
+    "atelierCraftDetails": "Chaque pièce est supervisée par notre maître tailleur à Casablanca et respecte les traditions de confection les plus exigeantes.",
+    "deliveryCarrier": "Transporteur express simulé (ex: Amana Express avec numéro de suivi sms)",
+    "deliveryDelay": "24h à Casablanca et Rabat, 48h dans les autres villes du Maroc (Simulé)",
+    "returnsNotice": "14 jours pour essayer et retourner gratuitement vos pièces (Démonstration).",
     "share": "Partager",
     "lowStockWarning": "Plus que {count} pièces disponibles dans cette déclinaison",
     "outOfStockAlert": "Cette taille est actuellement indisponible.",
@@ -254,7 +278,7 @@
     "resetSeed": "Réinitialiser les données",
     "dialogTitle": "Propulsez votre marque avec BSES",
     "dialogBody": "Ce projet démontre notre savoir-faire en matière de design haute couture, réactivité mobile, multilinguisme avec RTL arabe parfait, et parcours d'achat adapté au marché marocain (paiement à la livraison, villes marocaines, logistique express). Contactez nos ingénieurs pour concevoir votre propre plateforme.",
-    "whatsappMessage": "Bonjour BSES, j'ai exploré la démonstration VELORA et je souhaite échanger sur un projet e-commerce pour ma marque."
+    "whatsappMessage": "Bonjour BSES, je viens de découvrir votre démonstration VELORA et je souhaite discuter de la création d'une boutique e-commerce similaire."
   }
 }
 

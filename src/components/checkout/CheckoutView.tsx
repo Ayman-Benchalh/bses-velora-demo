@@ -121,9 +121,9 @@ export function CheckoutView({ locale }: CheckoutViewProps) {
         {
           status: "shipped",
           title: {
-            fr: "Prise en charge Amana Express",
-            en: "Carrier dispatch",
-            ar: "تم التسليم لشركة أمانة إكسبريس",
+            fr: "Prise en charge transporteur (Simulé)",
+            en: "Carrier dispatch (Simulated)",
+            ar: "تم التسليم للناقل السريع (محاكاة)",
           },
           description: {
             fr: `En route pour ${formData.city}`,

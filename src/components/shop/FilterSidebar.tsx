@@ -137,7 +137,7 @@ export function FilterSidebar({
               <button
                 key={sz}
                 onClick={() => toggleSize(sz)}
-                className={`min-w-8 px-2 py-1.5 text-[11px] font-mono border transition-colors ${
+                className={`min-w-9 min-h-[36px] px-2.5 py-1 text-[11px] font-mono border transition-colors flex items-center justify-center ${
                   isSelected
                     ? "bg-ink text-white border-ink font-bold"
                     : "bg-white text-muted-dark border-ivory-dark hover:border-camel hover:text-ink"

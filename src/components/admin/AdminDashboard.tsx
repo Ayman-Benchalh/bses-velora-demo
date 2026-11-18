@@ -8,6 +8,11 @@ import { useStore } from "@/context/StoreContext";
 import { useToast } from "@/context/ToastContext";
 import { formatMAD, formatDate } from "@/lib/utils";
 import { t } from "@/lib/translations";
+import {
+  BSES_CONTACT_EMAIL,
+  BSES_OFFICIAL_PHONE_DISPLAY,
+  getBsesWhatsAppUrl,
+} from "@/lib/constants";
 import { ProductFormModal } from "./ProductFormModal";
 import {
   LayoutDashboard,
@@ -25,6 +30,8 @@ import {
   Search,
   ArrowUpRight,
   Store,
+  MessageCircle,
+  Mail,
 } from "lucide-react";
 
 interface AdminDashboardProps {
@@ -68,14 +75,18 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
   const [newPromoCode, setNewPromoCode] = useState("");
   const [newPromoPercent, setNewPromoPercent] = useState("15");
 
-  // Computed metrics
-  const totalRevenue = useMemo(() => {
-    return orders.reduce((sum, ord) => sum + ord.total, 0);
+  // Computed metrics (excludes cancelled orders from financial revenue)
+  const activeOrders = useMemo(() => {
+    return orders.filter((o) => o.status !== "cancelled");
   }, [orders]);
 
+  const totalRevenue = useMemo(() => {
+    return activeOrders.reduce((sum, ord) => sum + ord.total, 0);
+  }, [activeOrders]);
+
   const averageOrderValue = useMemo(() => {
-    return orders.length > 0 ? Math.round(totalRevenue / orders.length) : 0;
-  }, [totalRevenue, orders]);
+    return activeOrders.length > 0 ? Math.round(totalRevenue / activeOrders.length) : 0;
+  }, [totalRevenue, activeOrders]);
 
   const lowStockProducts = useMemo(() => {
     return products.filter((p) => {
@@ -83,6 +94,43 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
       return stock <= 3;
     });
   }, [products]);
+
+  // Dynamically computed 7-day sales histogram strictly derived from orders
+  const salesByDay = useMemo(() => {
+    const daysMeta = [
+      { key: 1, label: { fr: "Lun", en: "Mon", ar: "الاثنين" } },
+      { key: 2, label: { fr: "Mar", en: "Tue", ar: "الثلاثاء" } },
+      { key: 3, label: { fr: "Mer", en: "Wed", ar: "الأربعاء" } },
+      { key: 4, label: { fr: "Jeu", en: "Thu", ar: "الخميس" } },
+      { key: 5, label: { fr: "Ven", en: "Fri", ar: "الجمعة" } },
+      { key: 6, label: { fr: "Sam", en: "Sat", ar: "السبت" } },
+      { key: 0, label: { fr: "Dim", en: "Sun", ar: "الأحد" } },
+    ];
+
+    const dayTotals: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 0: 0 };
+
+    activeOrders.forEach((o) => {
+      try {
+        const d = new Date(o.createdAt);
+        const dayIdx = isNaN(d.getTime()) ? 1 : d.getDay();
+        dayTotals[dayIdx] = (dayTotals[dayIdx] || 0) + o.total;
+      } catch {
+        dayTotals[1] = (dayTotals[1] || 0) + o.total;
+      }
+    });
+
+    const maxVal = Math.max(...Object.values(dayTotals), 1);
+
+    return daysMeta.map((dm) => {
+      const amount = dayTotals[dm.key] || 0;
+      const heightPercent = amount > 0 ? Math.max(15, Math.round((amount / maxVal) * 100)) : 4;
+      return {
+        day: dm.label[locale] || dm.label.fr,
+        amount,
+        height: `${heightPercent}%`,
+      };
+    });
+  }, [activeOrders, locale]);
 
   // Handlers
   const handleSaveProduct = (prod: Product) => {
@@ -155,7 +203,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
   });
 
   return (
-    <div className="min-h-screen bg-ivory/30 font-sans pb-20">
+    <div className="min-h-screen bg-ivory/30 font-sans pb-20 overflow-x-hidden">
       {/* Prominent Demo Mode Top Banner */}
       <div className="bg-ink text-white py-3 px-4 border-b border-ink-800">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs">
@@ -167,7 +215,7 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
             <span className="text-white/60 hidden sm:inline">— BSES E-commerce Studio</span>
           </div>
 
-          <div className="flex items-center gap-4 text-[11px] font-mono">
+          <div className="flex items-center flex-wrap gap-4 text-[11px] font-mono">
             <Link
               href={`/${locale}`}
               className="hover:text-camel flex items-center gap-1 text-ivory underline"
@@ -175,6 +223,17 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
               <Store className="w-3.5 h-3.5" />
               <span>{t(locale, "common.exploreShop")}</span>
             </Link>
+            <span>|</span>
+            <a
+              href={getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"))}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-camel flex items-center gap-1 text-camel-light font-semibold underline"
+              aria-label="Contacter BSES sur WhatsApp"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-camel" />
+              <span>WhatsApp BSES</span>
+            </a>
             <span>|</span>
             <button
               onClick={handleResetData}
@@ -327,21 +386,13 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
                 </span>
               </div>
 
-              {/* Responsive SVG Histogram Chart */}
+              {/* Responsive Dynamic Histogram Chart */}
               <div className="pt-4 pb-2">
                 <div className="h-44 w-full flex items-end justify-between gap-3 sm:gap-6 px-2">
-                  {[
-                    { day: "Lun", amount: 4800, height: "45%" },
-                    { day: "Mar", amount: 6200, height: "58%" },
-                    { day: "Mer", amount: 3900, height: "35%" },
-                    { day: "Jeu", amount: 8400, height: "78%" },
-                    { day: "Ven", amount: 10500, height: "92%" },
-                    { day: "Sam", amount: 12300, height: "100%" },
-                    { day: "Dim", amount: 7600, height: "68%" },
-                  ].map((bar, i) => (
+                  {salesByDay.map((bar, i) => (
                     <div key={i} className="flex-1 flex flex-col items-center gap-2 group">
                       <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-mono font-bold text-camel">
-                        {bar.amount}
+                        {formatMAD(bar.amount, locale)}
                       </span>
                       <div className="w-full bg-ivory-dark rounded-xs h-32 flex items-end overflow-hidden">
                         <div
@@ -908,6 +959,35 @@ export function AdminDashboard({ locale }: AdminDashboardProps) {
               <RotateCcw className="w-4 h-4" />
               <span>{t(locale, "admin.resetData")}</span>
             </button>
+
+            {/* BSES Commercial Contact in Admin Settings */}
+            <div className="pt-6 border-t border-ivory-dark space-y-3">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-camel font-semibold block">
+                ASSISTANCE COMMERCIALE BSES
+              </span>
+              <p className="text-xs text-muted-dark leading-relaxed">
+                Besoin d&apos;une adaptation sur-mesure pour votre marque ou boutique e-commerce marocaine ? Contactez nos architectes de solutions.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 pt-1">
+                <a
+                  href={getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"))}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 bg-ink text-white text-xs font-mono uppercase tracking-wider hover:bg-camel transition-colors"
+                  aria-label="Contacter BSES sur WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4 text-camel" />
+                  <span>WhatsApp : {BSES_OFFICIAL_PHONE_DISPLAY}</span>
+                </a>
+                <a
+                  href={`mailto:${BSES_CONTACT_EMAIL}`}
+                  className="inline-flex items-center justify-center gap-2 py-2.5 px-4 border border-ink text-ink text-xs font-mono uppercase tracking-wider hover:bg-ivory transition-colors"
+                >
+                  <Mail className="w-4 h-4 text-camel" />
+                  <span>{BSES_CONTACT_EMAIL}</span>
+                </a>
+              </div>
+            </div>
           </div>
         )}
       </main>

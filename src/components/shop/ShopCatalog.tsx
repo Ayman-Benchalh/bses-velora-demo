@@ -62,23 +62,58 @@ export function ShopCatalog({ locale, initialCategory = "all" }: ShopCatalogProp
     }
   }, [queryCategory, querySearch]);
 
-  // Extract all available sizes & colors from current products
+  // Extract category-aware available sizes & colors from relevant products
   const availableSizes = useMemo(() => {
+    const relevantProducts =
+      filters.category && filters.category !== "all"
+        ? products.filter((p) => p.category === filters.category)
+        : products;
+
     const set = new Set<string>();
-    products.forEach((p) => p.sizes.forEach((s) => set.add(s)));
-    return Array.from(set);
-  }, [products]);
+    relevantProducts.forEach((p) => p.sizes.forEach((s) => set.add(s)));
+
+    // Sort sizes logically: numbers first, standard letter sizes, then dimensions
+    const letterOrder = ["XS", "S", "M", "L", "XL", "XXL", "Unique"];
+    return Array.from(set).sort((a, b) => {
+      const numA = parseInt(a, 10);
+      const numB = parseInt(b, 10);
+      if (!isNaN(numA) && !isNaN(numB)) return numA - numB;
+      if (!isNaN(numA)) return -1;
+      if (!isNaN(numB)) return 1;
+      const idxA = letterOrder.indexOf(a);
+      const idxB = letterOrder.indexOf(b);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return a.localeCompare(b);
+    });
+  }, [products, filters.category]);
+
+  // Synchronize and prune selected sizes if category changes and selected sizes are invalid in that category
+  useEffect(() => {
+    if (filters.sizes.length > 0) {
+      const valid = filters.sizes.filter((sz) => availableSizes.includes(sz));
+      if (valid.length !== filters.sizes.length) {
+        setFilters((prev) => ({ ...prev, sizes: valid }));
+      }
+    }
+  }, [availableSizes, filters.sizes]);
 
   const availableColors = useMemo(() => {
+    const relevantProducts =
+      filters.category && filters.category !== "all"
+        ? products.filter((p) => p.category === filters.category)
+        : products;
+
     const map = new Map<string, string>();
-    products.forEach((p) => {
+    relevantProducts.forEach((p) => {
       p.colors.forEach((c) => {
         const name = c.name[locale] || c.name.fr;
         if (!map.has(name)) map.set(name, c.hex);
       });
     });
     return Array.from(map.entries()).map(([name, hex]) => ({ name, hex }));
-  }, [products, locale]);
+  }, [products, filters.category, locale]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {

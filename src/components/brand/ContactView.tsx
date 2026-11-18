@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import { Locale } from "@/types";
 import { t } from "@/lib/translations";
 import { useToast } from "@/context/ToastContext";
-import { BSES_CONTACT_EMAIL, getBsesWhatsAppUrl } from "@/lib/constants";
+import {
+  BSES_CONTACT_EMAIL,
+  BSES_OFFICIAL_PHONE_DISPLAY,
+  getBsesWhatsAppUrl,
+} from "@/lib/constants";
 import { Mail, MapPin, Send, MessageCircle } from "lucide-react";
 
 interface ContactViewProps {
@@ -82,17 +86,21 @@ export function ContactView({ locale }: ContactViewProps) {
                 </div>
               </div>
 
-              {whatsappUrl && (
                 <div className="flex gap-3">
                   <MessageCircle className="w-4 h-4 text-camel flex-shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-ink block">WhatsApp Démonstration</strong>
-                    <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-camel underline font-mono">
-                      Ligne directe consultation
+                    <strong className="text-ink block">WhatsApp Consultation BSES</strong>
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:text-camel underline font-mono text-xs"
+                      aria-label="Discuter avec BSES sur WhatsApp"
+                    >
+                      {BSES_OFFICIAL_PHONE_DISPLAY}
                     </a>
                   </div>
                 </div>
-              )}
             </div>
           </div>
 

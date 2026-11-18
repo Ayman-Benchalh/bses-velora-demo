@@ -6,6 +6,11 @@ import { Locale } from "@/types";
 import { t } from "@/lib/translations";
 import { useToast } from "@/context/ToastContext";
 import {
+  BSES_CONTACT_EMAIL,
+  BSES_OFFICIAL_PHONE_DISPLAY,
+  getBsesWhatsAppUrl,
+} from "@/lib/constants";
+import {
   ShieldCheck,
   Truck,
   RotateCcw,
@@ -31,9 +36,7 @@ export function Footer({ locale }: FooterProps) {
     }
   };
 
-  const whatsappUrl = `https://wa.me/212600000000?text=${encodeURIComponent(
-    t(locale, "bses.whatsappMessage")
-  )}`;
+  const whatsappUrl = getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"));
 
   return (
     <footer className="bg-ink text-ivory border-t border-ink-800 transition-colors">
@@ -225,17 +228,23 @@ export function Footer({ locale }: FooterProps) {
             </button>
           </form>
 
-          <div className="pt-2 space-y-1 text-[11px] text-muted-light">
+          <div className="pt-2 space-y-1.5 text-[11px] text-muted-light font-mono">
             <p className="flex items-center gap-1.5">
-              <Mail className="w-3 h-3 text-camel" />
-              <a href="mailto:Bses47113@gmail.com" className="hover:text-camel underline">
-                Bses47113@gmail.com
+              <Mail className="w-3.5 h-3.5 text-camel" />
+              <a href={`mailto:${BSES_CONTACT_EMAIL}`} className="hover:text-camel underline">
+                {BSES_CONTACT_EMAIL}
               </a>
             </p>
             <p className="flex items-center gap-1.5">
-              <MessageCircle className="w-3 h-3 text-camel" />
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-camel underline">
-                WhatsApp BSES Démo
+              <MessageCircle className="w-3.5 h-3.5 text-camel" />
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-camel underline"
+                aria-label="Contacter BSES sur WhatsApp"
+              >
+                WhatsApp : {BSES_OFFICIAL_PHONE_DISPLAY}
               </a>
             </p>
           </div>

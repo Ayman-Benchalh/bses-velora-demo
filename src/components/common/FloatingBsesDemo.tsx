@@ -6,7 +6,11 @@ import { Locale } from "@/types";
 import { useStore } from "@/context/StoreContext";
 import { useToast } from "@/context/ToastContext";
 import { t } from "@/lib/translations";
-import { BSES_CONTACT_EMAIL, getBsesWhatsAppUrl } from "@/lib/constants";
+import {
+  BSES_CONTACT_EMAIL,
+  BSES_OFFICIAL_PHONE_DISPLAY,
+  getBsesWhatsAppUrl,
+} from "@/lib/constants";
 import {
   Sparkles,
   LayoutDashboard,
@@ -57,7 +61,7 @@ export function FloatingBsesDemo({ locale }: FloatingBsesDemoProps) {
 
         {/* Expanded menu card */}
         {isOpen && (
-          <div className="absolute bottom-12 left-0 mb-2 w-72 bg-white text-ink border border-ivory-dark shadow-luxury-lg p-4 animate-slide-up rtl:left-auto rtl:right-0">
+          <div className="absolute bottom-12 left-0 mb-2 w-72 max-w-[calc(100vw-2.5rem)] bg-white text-ink border border-ivory-dark shadow-luxury-lg p-4 animate-slide-up rtl:left-auto rtl:right-0">
             <div className="flex items-center justify-between pb-3 border-b border-ivory-dark">
               <div>
                 <p className="text-[10px] tracking-widest uppercase font-mono text-camel font-semibold">
@@ -176,7 +180,7 @@ export function FloatingBsesDemo({ locale }: FloatingBsesDemoProps) {
                       rel="noopener noreferrer"
                       className="text-camel-dark underline hover:text-ink font-mono flex items-center gap-1"
                     >
-                      WhatsApp Démo <ExternalLink className="w-3 h-3" />
+                      {BSES_OFFICIAL_PHONE_DISPLAY} <ExternalLink className="w-3 h-3" />
                     </a>
                   </div>
                 )}

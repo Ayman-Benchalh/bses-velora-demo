@@ -31,8 +31,8 @@ export function AnnouncementBar({ locale }: AnnouncementBarProps) {
         </div>
 
         {/* Center: Seasonal Announcement */}
-        <div className="flex-1 text-center truncate">
-          <span className="text-ivory-light font-light">
+        <div className="flex-1 min-w-0 text-center truncate">
+          <span className="text-ivory-light font-light truncate">
             {t(locale, "announcement.text")}
           </span>
           <Link

@@ -185,15 +185,16 @@ npm run test:e2e
 10. **Lookbook & Hotspots:** Verifies editorial layouts and interactive shop-the-look hotspot pins.
 11. **Mobile Ergonomics & Accessibility:** Verifies 375x667 drawer navigation, 48px touch targets, modal Escape-key closing, and localStorage JSON corruption resilience.
 
-For detailed test logs, see [`QA_REPORT.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/QA_REPORT.md) and [`CHANGELOG.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/CHANGELOG.md).
+For detailed test logs, see [`QA_REPORT.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/QA_REPORT.md), [`BUG_FIX_REPORT.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/BUG_FIX_REPORT.md), [`MOBILE_AUDIT.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/MOBILE_AUDIT.md), and [`CHANGELOG.md`](file:///d:/Ayman%20code/All%20code/me-githubpro/CHANGELOG.md).
 
 ---
 
-## 8. Portfolio Client Attribution
+## 8. Portfolio Client Attribution & Contact
 
 This project is authored and maintained by:
 * **Agency:** BSES — Benchalh Solution E-commerce System
-* **Specialty:** Tailored luxury e-commerce platforms, Moroccan logistics integration, and multi-currency/RTL digital experiences.
+* **Specialty:** Tailored luxury e-commerce platforms, Moroccan logistics integration, high-contrast editorial UX, and multilingual/RTL digital experiences.
 * **Executive Inquiries:** [Bses47113@gmail.com](mailto:Bses47113@gmail.com)
-* **Direct Consultation:** Inquiries are received directly via email or via the configurable WhatsApp consultation integration (`NEXT_PUBLIC_BSES_WHATSAPP_URL`).
+* **Official WhatsApp:** [+212 694-991485](https://wa.me/212694991485)
+* **Live Production Demonstration:** [https://bses-velora-demo.vercel.app/fr](https://bses-velora-demo.vercel.app/fr)
 
