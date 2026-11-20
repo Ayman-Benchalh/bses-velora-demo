@@ -5,6 +5,22 @@ This project adheres to [Semantic Versioning](https://semver.org/) and follows t
 
 ---
 
+## [1.3.1] - 2026-11-18 — Critical Mobile Navigation Drawer Fix via React Portal
+
+### Summary
+Diagnosed and eliminated the critical mobile navigation drawer defect where opening the hamburger menu rendered a 76px truncated white panel on the left with navigation links hidden. Implemented a React Portal architecture mounting directly onto `document.body` to completely escape ancestor `backdrop-filter` containing blocks. Added full 100dvh viewport height, `w-[min(85vw,360px)]` responsive width, independent scroll with `overscroll-contain`, accessible focus trapping, keyboard `Escape` closing, route change auto-closing, and 13 dedicated multi-viewport Playwright regression tests.
+
+### Key Technical Remediation
+- **Root Cause:** In CSS Transforms & Filter Effects Module specifications, `backdrop-filter` creates a new containing block for `position: fixed` elements. Because `<header>` had `backdrop-blur-sm` / `backdrop-blur-md`, the fixed drawer was trapped inside `<header>`'s 76px height, clipping all navigation links.
+- **Portal Implementation (`Header.tsx`):** Teleported the drawer and full-screen backdrop directly to `document.body` via `createPortal`, ensuring true viewport coordinates.
+- **Viewport Ergonomics:** Drawer height set to `100dvh` (dynamic viewport height) and width bounded to `min(85vw, 360px)`, avoiding address bar clipping on mobile Safari and Android Chrome.
+- **Independent Scroll:** Main menu links container is `flex-1 overflow-y-auto overscroll-contain`, enabling smooth thumb scrolling on short screens (320px–568px).
+- **RTL Arabic Alignment:** Set `dir={locale === "ar" ? "rtl" : "ltr"}` and `right-0` / `left-0` logic so Arabic users experience natural right-edge slide-in.
+- **Accessibility & Focus:** Added `aria-expanded` and `aria-controls` on the hamburger trigger, initial focus to the close button on open, focus restoration on close, and `Escape` key dismissal.
+- **Automated Regression Suite (`tests/e2e/mobile_drawer.spec.ts`):** 13 automated tests covering 7 viewports (320px–768px), backdrop clicks, route changes, RTL, and screenshot generation (100% pass rate).
+
+---
+
 ## [1.3.0] - 2026-11-18 — Official BSES Integration, Admin KPI Derivation & Multi-Viewport Zero-Overflow Hardening
 
 ### Summary

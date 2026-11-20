@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Locale } from "@/types";
@@ -32,10 +33,18 @@ export function Header({ locale }: HeaderProps) {
   const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
+
+  const hamburgerButtonRef = useRef<HTMLButtonElement>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   const pathname = usePathname();
   const { openDrawer, itemCount } = useCart();
   const { count: wishlistCount } = useWishlist();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Scroll detection for sticky transparent-to-solid transition
   useEffect(() => {
@@ -58,10 +67,14 @@ export function Header({ locale }: HeaderProps) {
     setIsSearchOpen(false);
   }, [pathname]);
 
-  // Lock body scroll when mobile menu is open
+  // Lock body scroll and manage focus when mobile menu is open
   useEffect(() => {
     if (isMobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      const timer = setTimeout(() => {
+        closeButtonRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = "";
     }
@@ -70,18 +83,21 @@ export function Header({ locale }: HeaderProps) {
     };
   }, [isMobileMenuOpen]);
 
-  // Close menus on Escape key
+  // Close menus on Escape key and return focus to hamburger trigger
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setIsMobileMenuOpen(false);
+        if (isMobileMenuOpen) {
+          setIsMobileMenuOpen(false);
+          hamburgerButtonRef.current?.focus();
+        }
         setIsCategoryMenuOpen(false);
         setIsSearchOpen(false);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isMobileMenuOpen]);
 
   const categories = [
     { slug: "women", label: t(locale, "nav.women") },
@@ -111,9 +127,12 @@ export function Header({ locale }: HeaderProps) {
           {/* Mobile menu trigger */}
           <div className="flex items-center lg:hidden">
             <button
+              ref={hamburgerButtonRef}
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-1.5 text-ink hover:text-camel transition-colors"
+              className="p-2 -ml-2 text-ink hover:text-camel transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center rtl:-ml-0 rtl:-mr-2"
               aria-label="Ouvrir le menu de navigation"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-nav-dialog"
             >
               <Menu className="w-6 h-6" />
             </button>
@@ -261,38 +280,58 @@ export function Header({ locale }: HeaderProps) {
         )}
       </div>
 
-      {/* Mobile Navigation Drawer */}
-      {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
+      {/* Mobile Navigation Drawer rendered via Portal to escape header backdrop-filter containing block */}
+      {mounted &&
+        isMobileMenuOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
-            onClick={() => setIsMobileMenuOpen(false)}
-          />
+            id="mobile-nav-dialog"
+            dir={locale === "ar" ? "rtl" : "ltr"}
+            role="dialog"
+            aria-modal="true"
+            aria-label={t(locale, "nav.shop")}
+            className="fixed inset-0 z-[100] lg:hidden"
+          >
+            {/* Full Viewport Backdrop */}
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 animate-fade-in"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
 
-          {/* Drawer content */}
-          <div data-testid="mobile-drawer" className="fixed inset-y-0 left-0 max-w-xs w-full bg-white shadow-2xl p-6 flex flex-col justify-between overflow-y-auto z-10 rtl:left-auto rtl:right-0">
-            <div>
-              <div className="flex items-center justify-between pb-5 border-b border-ivory-dark">
+            {/* Mobile Drawer Panel with true 100dvh viewport height and width min(85vw, 360px) */}
+            <aside
+              data-testid="mobile-drawer"
+              className={`fixed inset-y-0 w-[min(85vw,360px)] h-full h-[100dvh] max-h-[100dvh] bg-white shadow-luxury-drawer flex flex-col justify-between overflow-hidden z-[101] font-sans ${
+                locale === "ar" ? "right-0" : "left-0"
+              }`}
+            >
+              {/* 1. Header (Sticky Top, Logo + Close Button) */}
+              <div className="flex-shrink-0 flex items-center justify-between px-6 py-5 border-b border-ivory-dark bg-white">
                 <Link
                   href={`/${locale}`}
+                  onClick={() => setIsMobileMenuOpen(false)}
                   className="font-serif text-xl tracking-[0.2em] font-bold text-ink uppercase"
                 >
                   VELORA
                 </Link>
                 <button
+                  ref={closeButtonRef}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-1 text-muted hover:text-ink"
+                  className="p-2 -mr-2 text-muted hover:text-ink hover:bg-ivory transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center rtl:-mr-0 rtl:-ml-2"
                   aria-label="Fermer le menu"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
-              <div className="py-6 flex flex-col gap-4 text-sm font-sans tracking-widest uppercase">
+              {/* 2. Scrollable Navigation Links (Independent Scroll, Over-scroll Contain) */}
+              <div className="flex-1 overflow-y-auto overscroll-contain px-6 py-6 space-y-4 text-sm font-sans tracking-widest uppercase">
                 <Link
                   href={`/${locale}/shop`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
                   {t(locale, "nav.shop")}
                 </Link>
@@ -302,7 +341,8 @@ export function Header({ locale }: HeaderProps) {
                     <Link
                       key={c.slug}
                       href={`/${locale}/shop?category=${c.slug}`}
-                      className="hover:text-camel transition-colors"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="py-1 hover:text-camel transition-colors min-h-[36px] flex items-center"
                     >
                       {c.label}
                     </Link>
@@ -311,44 +351,50 @@ export function Header({ locale }: HeaderProps) {
 
                 <Link
                   href={`/${locale}/lookbook`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
                   {t(locale, "nav.lookbook")}
                 </Link>
 
                 <Link
                   href={`/${locale}/about`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
                   {t(locale, "nav.about")}
                 </Link>
 
                 <Link
                   href={`/${locale}/contact`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
                   {t(locale, "nav.contact")}
                 </Link>
 
                 <Link
-                  href={`/${locale}/faq`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
-                >
-                  {t(locale, "nav.faq")}
-                </Link>
-
-                <Link
                   href={`/${locale}/delivery`}
-                  className="py-1 text-ink hover:text-camel font-medium border-b border-ivory/50"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
                   {t(locale, "nav.delivery")}
                 </Link>
 
                 <Link
-                  href={`/${locale}/admin-demo`}
-                  className="flex items-center gap-2 py-3 px-3 bg-ivory text-camel font-semibold tracking-wider hover:bg-camel hover:text-white transition-colors min-h-[44px]"
+                  href={`/${locale}/faq`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="block py-2 text-ink hover:text-camel font-medium border-b border-ivory/50 transition-colors"
                 >
-                  <LayoutDashboard className="w-4 h-4" />
+                  {t(locale, "nav.faq")}
+                </Link>
+
+                <Link
+                  href={`/${locale}/admin-demo`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="flex items-center gap-2.5 py-3.5 px-3.5 bg-ivory text-camel font-semibold tracking-wider hover:bg-camel hover:text-white transition-colors min-h-[44px] border border-ivory-dark"
+                >
+                  <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
                   <span>{t(locale, "nav.adminDemo")}</span>
                 </Link>
 
@@ -357,55 +403,58 @@ export function Header({ locale }: HeaderProps) {
                   href={getBsesWhatsAppUrl(t(locale, "bses.whatsappMessage"))}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 py-3 px-3 bg-ink text-white text-xs font-mono tracking-wider hover:bg-camel transition-colors min-h-[44px]"
+                  className="flex items-center justify-center gap-2 py-3.5 px-3.5 bg-ink text-white text-xs font-mono tracking-wider hover:bg-camel transition-colors min-h-[44px] shadow-sm"
                   aria-label="Contacter BSES sur WhatsApp"
                 >
-                  <MessageCircle className="w-4 h-4 text-camel" />
+                  <MessageCircle className="w-4 h-4 text-camel flex-shrink-0" />
                   <span>WhatsApp BSES ({BSES_OFFICIAL_PHONE_DISPLAY})</span>
                 </a>
               </div>
-            </div>
 
-            {/* Drawer Footer with Language switch & Agency Attribution */}
-            <div className="pt-6 border-t border-ivory-dark text-xs space-y-3">
-              <div className="flex items-center justify-between text-muted font-mono">
-                <span>Langue / اللغة :</span>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href={`/fr${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
-                      locale === "fr" ? "font-bold text-camel underline" : ""
-                    }`}
-                  >
-                    FR
-                  </Link>
-                  <span>·</span>
-                  <Link
-                    href={`/en${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
-                      locale === "en" ? "font-bold text-camel underline" : ""
-                    }`}
-                  >
-                    EN
-                  </Link>
-                  <span>·</span>
-                  <Link
-                    href={`/ar${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
-                    className={`py-1.5 px-2 min-h-[36px] flex items-center ${
-                      locale === "ar" ? "font-bold text-camel underline" : ""
-                    }`}
-                  >
-                    العربية
-                  </Link>
+              {/* 3. Drawer Footer with Language switch & Agency Attribution */}
+              <div className="flex-shrink-0 px-6 py-5 border-t border-ivory-dark bg-ivory/30 text-xs space-y-3 font-mono">
+                <div className="flex items-center justify-between text-muted">
+                  <span>Langue / اللغة :</span>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/fr${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-1 px-2 min-h-[36px] flex items-center ${
+                        locale === "fr" ? "font-bold text-camel underline" : "hover:text-ink"
+                      }`}
+                    >
+                      FR
+                    </Link>
+                    <span>·</span>
+                    <Link
+                      href={`/en${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-1 px-2 min-h-[36px] flex items-center ${
+                        locale === "en" ? "font-bold text-camel underline" : "hover:text-ink"
+                      }`}
+                    >
+                      EN
+                    </Link>
+                    <span>·</span>
+                    <Link
+                      href={`/ar${pathname ? pathname.replace(/^\/(fr|en|ar)/, "") : ""}`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className={`py-1 px-2 min-h-[36px] flex items-center ${
+                        locale === "ar" ? "font-bold text-camel underline" : "hover:text-ink"
+                      }`}
+                    >
+                      العربية
+                    </Link>
+                  </div>
                 </div>
+                <p className="text-[10px] text-muted text-center tracking-wider">
+                  BSES — Benchalh Solution E-commerce
+                </p>
               </div>
-              <p className="text-[10px] text-muted text-center font-mono">
-                BSES — Benchalh Solution E-commerce
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
+            </aside>
+          </div>,
+          document.body
+        )}
     </header>
   );
 }

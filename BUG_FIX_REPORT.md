@@ -138,6 +138,29 @@ All 22 Playwright automated tests and 11 viewport responsiveness tests (covering
 
 ---
 
+### ISSUE 7: Mobile Navigation Drawer Truncation via `backdrop-filter` Containing Block
+- **Severity:** Critical (Mobile navigation blocker)
+- **Reported Symptom:**
+  - Clicking the mobile hamburger menu opened a darkened backdrop and a white drawer panel on the left with VELORA logo and close (X) button.
+  - However, all navigation links were missing/clipped, and the drawer panel only occupied 76px tall instead of the full screen height.
+- **Root Cause Analysis:**
+  - The `<header>` element used `backdrop-blur-sm` / `backdrop-blur-md` (`backdrop-filter: blur(...)`).
+  - Per CSS Transforms and Filter Effects Module Level 1 specifications, applying `backdrop-filter` creates a new containing block for all `position: fixed` descendants.
+  - Because the mobile drawer panel was rendered inline inside `<header>`, its `fixed inset-y-0` or `top-0 h-full` was constrained to the header's height (76px) instead of the browser viewport (667px).
+- **Remediation Implemented:**
+  - **React Portal Architecture (`Header.tsx`):** Teleported the drawer and backdrop directly to `document.body` using `createPortal(..., document.body)`, completely escaping the header's containing block.
+  - **Dynamic Viewport Height & Width:** Configured `fixed inset-y-0 w-[min(85vw,360px)] h-full h-[100dvh] max-h-[100dvh]` with independent scroll (`flex-1 overflow-y-auto overscroll-contain`).
+  - **Accessible Hierarchy & Semantics:** Structured with `flex-shrink-0` header, scrollable categorized link list, and `flex-shrink-0` footer with language switch and BSES attribution.
+  - **RTL Arabic Alignment:** Added `dir={locale === "ar" ? "rtl" : "ltr"}` and `right-0` / `left-0` logic for authentic right-to-left slide-in.
+  - **Focus Management:** Focus moves to close button on drawer open, returns to hamburger trigger on close; global `Escape` key closes drawer.
+  - **Auto-Dismiss on Navigation:** Added `onClick={() => setIsMobileMenuOpen(false)}` across all navigation links.
+- **Verification:**
+  - Created dedicated test suite `tests/e2e/mobile_drawer.spec.ts` with 13 tests covering 7 viewports (320px, 360px, 375px, 390px, 414px, 430px, 768px): **13/13 PASSED (100%)**.
+  - Verified drawer bounding box expands to `y: 0, height: viewport.height` on all viewports.
+  - Captured evidence screenshots for 320px, 375px, English, and Arabic RTL.
+
+---
+
 ## Verification Summary Matrix
 
 | ID | Issue | Pre-Fix Status | Post-Fix Status | Verification Gate |
@@ -148,6 +171,8 @@ All 22 Playwright automated tests and 11 viewport responsiveness tests (covering
 | **ISSUE 4** | Real-World Simulated Claims Disclaimers | Defective | **RESOLVED** | Playwright Test 9 & 20 PASS |
 | **ISSUE 5** | Category-Aware Sizing & Pruning | Defective | **RESOLVED** | Playwright Test 4 PASS |
 | **ISSUE 6** | Mobile Scroll Lock, Escape Key & 320px Overflow | Defective | **RESOLVED** | Playwright Test 17 & Viewport Suite PASS |
+| **ISSUE 7** | Mobile Navigation Drawer Truncation (Portal Fix) | Defective | **RESOLVED** | Dedicated Suite 13/13 PASS |
 
-**Total Defects Resolved:** 6 / 6  
+**Total Defects Resolved:** 7 / 7  
 **Regression Status:** 0 regressions detected.  
+

@@ -79,3 +79,4 @@ In accordance with Material Design 3 and WCAG 2.1 Success Criterion 2.5.5 / 2.5.
 1. **Keep Mobile First:** As over 75% of Moroccan e-commerce traffic originates from mobile devices (WhatsApp, Instagram, TikTok campaigns), the verified 320px–430px mobile responsiveness provides a major sales advantage when demonstrating to fashion retail clients.
 2. **WhatsApp Native Deep-Linking:** The direct `wa.me` links with prefilled messages open the native WhatsApp mobile app instantly on iOS and Android without intermediate landing pages.
 3. **PWA Readiness:** VELORA's clean responsive manifest, fast First Load JS (<105 kB), and standalone output make it immediately candidate for Progressive Web App (PWA) installation.
+
